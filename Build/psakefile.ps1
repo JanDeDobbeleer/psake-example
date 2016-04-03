@@ -1,5 +1,5 @@
 #requires -Version 3
-. '.\build-tools.ps1'
+. '.\psakefile-tools.ps1'
 
 Properties {  
   $solutionFileName = $null
@@ -9,25 +9,6 @@ Properties {
   $app_name = $null
   $display_name = $null
   $product_id = $null
-}
-
-# our default task, which is used if no task is specified
-Task Default -Depends Build
-
-Task Build -Depends TestProperties, Clean, Version {  
-  Write-Host -Object 'Building solution' -ForegroundColor DarkCyan
-  return Exec {
-    &('C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe') (Get-SolutionPath -solutionName $solutionFileName) /p:Configuration="$configuration" /p:Platform="$build_platform" /v:q
-  }
-}
-
-Task RestorePackages {
-  Write-Host -Object 'Start restoring Nuget packages' -ForegroundColor DarkCyan
-  $nuget_executable_file_path = $PSScriptRoot + '\NuGet.exe'
-  $nuget_config_file_path = $PSScriptRoot + '\NuGet.Config'
-  Exec {
-    &($nuget_executable_file_path) restore (Get-SolutionPath -solutionName $solutionFileName) -ConfigFile $nuget_config_file_path -NoCache
-  }
 }
 
 Task TestProperties {  
@@ -40,12 +21,21 @@ Task TestProperties {
   Assert ($product_id -ne $null) 'Product Id should be null'
 }
 
-Task Test {
-  # executes unit tests
+# our default task, which is used if no task is specified
+Task Default -Depends Build
+
+Task Build -Depends TestProperties, Clean, Version {  
+  Write-Host -Object 'Building solution' -ForegroundColor DarkCyan
+  return Exec {
+    &('C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe') (Get-SolutionPath -solutionName $solutionFileName) /p:Configuration="$configuration" /p:Platform="$build_platform" /v:q
+  }
 }
 
-Task Validate {
-  # executes the WACK
+Task Clean {
+  Write-Host -Object 'Cleaning solution' -ForegroundColor DarkCyan	
+  Exec {
+    &('C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe') (Get-SolutionPath -solutionName $solutionFileName) /p:Configuration="$configuration" /p:Platform="$build_platform" /v:q /t:Clean
+  }
 }
 
 Task Version {
@@ -83,9 +73,19 @@ Task Version {
   Write-Host -Object 'Updated the store association file' -ForegroundColor DarkCyan
 }
 
-Task Clean {
-  Write-Host -Object 'Cleaning solution' -ForegroundColor DarkCyan	
+Task RestorePackages {
+  Write-Host -Object 'Start restoring Nuget packages' -ForegroundColor DarkCyan
+  $nuget_executable_file_path = $PSScriptRoot + '\NuGet.exe'
+  $nuget_config_file_path = $PSScriptRoot + '\NuGet.Config'
   Exec {
-    &('C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe') (Get-SolutionPath -solutionName $solutionFileName) /p:Configuration="$configuration" /p:Platform="$build_platform" /v:q /t:Clean
+    &($nuget_executable_file_path) restore (Get-SolutionPath -solutionName $solutionFileName) -ConfigFile $nuget_config_file_path -NoCache
   }
+}
+
+Task Test {
+  # executes unit tests
+}
+
+Task Validate {
+  # executes the WACK
 }
