@@ -24,7 +24,7 @@ Task TestProperties {
 # our default task, which is used if no task is specified
 Task Default -Depends Build
 
-Task Build -Depends TestProperties, Clean, Version {
+Task Build -Depends TestProperties, Clean, RestorePackages {
   Write-Host -Object 'Building solution' -ForegroundColor DarkCyan
   return Exec {
     &('C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe') (Get-SolutionPath -solutionName $solutionFileName) /p:Configuration="$configuration" /p:Platform="$build_platform" /v:q
