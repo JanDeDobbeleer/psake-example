@@ -1,7 +1,7 @@
 #requires -Version 3
 . '.\psakefile-tools.ps1'
 
-Properties {  
+Properties {
   $solutionFileName = $null
   $build_platform = $null
   $configuration = $null
@@ -11,7 +11,7 @@ Properties {
   $product_id = $null
 }
 
-Task TestProperties {  
+Task TestProperties {
   Assert ($solutionFileName -ne $null) 'Solution file name should not be null'
   Assert ($build_platform -ne $null) 'Build platform should not be null'
   Assert ($configuration -ne $null) 'Configuration should not be null'
@@ -24,7 +24,7 @@ Task TestProperties {
 # our default task, which is used if no task is specified
 Task Default -Depends Build
 
-Task Build -Depends TestProperties, Clean, Version {  
+Task Build -Depends TestProperties, Clean, Version {
   Write-Host -Object 'Building solution' -ForegroundColor DarkCyan
   return Exec {
     &('C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe') (Get-SolutionPath -solutionName $solutionFileName) /p:Configuration="$configuration" /p:Platform="$build_platform" /v:q
@@ -32,7 +32,7 @@ Task Build -Depends TestProperties, Clean, Version {
 }
 
 Task Clean {
-  Write-Host -Object 'Cleaning solution' -ForegroundColor DarkCyan	
+  Write-Host -Object 'Cleaning solution' -ForegroundColor DarkCyan
   Exec {
     &('C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe') (Get-SolutionPath -solutionName $solutionFileName) /p:Configuration="$configuration" /p:Platform="$build_platform" /v:q /t:Clean
   }
@@ -78,7 +78,7 @@ Task RestorePackages {
   $nuget_executable_file_path = $PSScriptRoot + '\NuGet.exe'
   $nuget_config_file_path = $PSScriptRoot + '\NuGet.Config'
   Exec {
-    &($nuget_executable_file_path) restore (Get-SolutionPath -solutionName $solutionFileName) -ConfigFile $nuget_config_file_path -NoCache
+    &($nuget_executable_file_path) restore (Get-SolutionPath -solutionName $solutionFileName) -ConfigFile $nuget_config_file_path -NoCache -MSBuildVersion 14
   }
 }
 
