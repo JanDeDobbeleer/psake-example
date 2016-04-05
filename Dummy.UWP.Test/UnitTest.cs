@@ -15,7 +15,7 @@ namespace Dummy.UWP.Test
         [TestMethod]
         public void TrueShouldBeTrue()
         {
-            Assert.IsFalse(true);
+            Assert.IsTrue(true);
         }
     }
 }
