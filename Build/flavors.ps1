@@ -1,8 +1,17 @@
 #requires -Version 1
-Task Default -Depends Production
+Task Default -Depends ProductionCI
 
-Task Production {
-  return Invoke-psake psakefile.ps1 Build -properties @{
+Task ProductionCI {
+  Invoke-psake psakefile.ps1 CI -properties @{
+    'solutionFileName' = 'Dummy.sln'
+    'build_platform' = 'x86'
+    'configuration'  = 'Release'
+    'project_name'   = 'Dummy.UWP.Test'
+  }
+}
+
+Task ProductionCD {
+  Invoke-psake psakefile.ps1 CD -properties @{
     'solutionFileName' = 'Dummy.sln'
     'build_platform' = 'ARM'
     'configuration'  = 'Release'
@@ -13,8 +22,8 @@ Task Production {
   }
 }
 
-Task Beta {
-  return Invoke-psake psakefile.ps1 Build -properties @{
+Task BetaCD {
+  Invoke-psake psakefile.ps1 CD -properties @{
     'solutionFileName' = 'Dummy.sln'
     'build_platform' = 'ARM'
     'configuration'  = 'Release'
