@@ -95,8 +95,10 @@ Task RestorePackages {
 Task Test -Depends VerifyTestProperties {
   $file = Get-AppxPackageLocation -projectName $project_name
   Write-Host -Object "Starting tests with test appx package $file" -ForegroundColor DarkCyan
-  Exec {
-    &('C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe') $file
+  $output = (&('C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe') $file)
+  Write-Host $output
+  if (!($output -like '*Test Run Successful*')) {
+    throw 'Test: Unit test run unsuccessful'
   }
 }
 
